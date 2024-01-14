@@ -1,0 +1,53 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 20px;
+}
+
+#notepad {
+    font-family: 'Courier New', Courier, monospace;
+    width: 99%;
+    height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: medium;
+}
+
+#lineNumbers {
+    float: left;
+    margin-right: 10px;
+    color: #888;
+}
+
+button {
+    background-color: #5ac784;
+    
+    color: white;
+   
+    padding: 10px 20px;
+  
+    border: none;
+    
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1ea050;
+    /* Darker shade on hover */
+}
+#Creator {
+    text-align: center;
+    margin-top: 20px;
+    margin-top: 20%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Adjust as needed */
+}
+
+/* Style for the Creator text */
+#Creator {
+    font-size: 14px;
+    color: #555;
+    /* Adjust the color as needed */
+    font-style: italic;
+}
