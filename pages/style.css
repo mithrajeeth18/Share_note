@@ -6,7 +6,7 @@ body {
 #notepad {
     font-family: 'Courier New', Courier, monospace;
     width: 99%;
-    height: 300px;
+    height: 400px;
     border: 1px solid #ccc;
     padding: 10px;
     resize: none;
@@ -39,7 +39,7 @@ button:hover {
 #Creator {
     text-align: center;
     margin-top: 20px;
-    margin-top: 20%;
+    margin-top: 15%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     /* Adjust as needed */
 }
