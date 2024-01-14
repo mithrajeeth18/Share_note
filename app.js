@@ -40,9 +40,9 @@ app.use((req, res) => {
     res.render("index", { notepad: "" });
   }
 
-  console.log(a);
+ 
 });
 
 app.listen(3000, () => {
-  console.log("Running on port 3000");
+  //console.log("Running on port 3000");
 });
