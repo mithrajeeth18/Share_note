@@ -1,16 +1,15 @@
+/* Existing CSS */
 body {
     font-family: 'Courier New', Courier, monospace;
     margin: 20px;
 }
 
 #notepad {
-    font-family: 'Courier New', Courier, monospace;
     width: 99%;
     height: 400px;
     border: 1px solid #ccc;
     padding: 10px;
     resize: none;
-    font-family: 'Courier New', Courier, monospace;
     font-size: medium;
 }
 
@@ -21,21 +20,18 @@ body {
 }
 
 button {
-    background-color: #5ac784;
-    
+    background-color: #4aae6d;
     color: white;
-   
     padding: 10px 20px;
-  
     border: none;
-    
+    border-radius: 20px;
     cursor: pointer;
 }
 
 button:hover {
     background-color: #1ea050;
-    /* Darker shade on hover */
 }
+
 #Creator {
     text-align: center;
     margin-top: 20px;
@@ -44,10 +40,78 @@ button:hover {
     /* Adjust as needed */
 }
 
+#lockButton {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#lockModal {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #f1f1f1;
+    border: 1px solid #888;
+    z-index: 1;
+}
+
+#lockModal input {
+    padding: 10px;
+    margin: 5px;
+}
+
+#lockModalButton {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
 /* Style for the Creator text */
 #Creator {
     font-size: 14px;
     color: #555;
-    /* Adjust the color as needed */
     font-style: italic;
+}
+
+/* New CSS for locked URL page */
+#lockPageContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* Adjust as needed */
+    flex-direction: column;
+}
+
+#lockPageContent p {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #333;
+    /* Adjust as needed */
+}
+
+#lockPageContent input[type="password"] {
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#lockPageContent button[type="submit"] {
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    background-color: #4aae6d;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+#lockPageContent button[type="submit"]:hover {
+    background-color: #1ea050;
 }

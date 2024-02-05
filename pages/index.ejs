@@ -1,29 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<head>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Share Form</title>
+    <title>Share Note</title>
 </head>
 
 <body>
     <form action="/message" method="post">
-    <div>
-        <div id="lineNumbers"></div>
-        <textarea id="notepad" name="notepad"><%= notepad %></textarea>
+        <div>
+            <div id="lineNumbers"></div>
+            <textarea id="notepad" name="notepad"><%= notepad %></textarea>
+        </div>
+        <div id="buttons">
+            <button type="submit">Save</button>
+            <%if(lock){%>
+            <button formaction="/mod" formmethod="get" >Lock Page</button>
+            <% } %>
+        </div>
+    </form>
+
+    <!-- Open the modal based on a variable -->
+    <% if (showModal) { %>
+        <div id="lockModal">
+            <form action="/lock" method="post">
+            <label for="passkey">Enter Passkey: </label>
+            <input type="password" id="passkey" name="pass" placeholder="Enter passkey"><br>
+            <a style="color: red;"><%=error %></a>
+            <br>
+            <button type="submit"  id="lockModalButton">Lock</button>
+            <button formaction="/close" formmethod="get" >Close</button>
+
+            </form>
+        </div>
+    <%     } else{  %> 
         
-    </div>
-    <div id="buttons">
-        <button type="submit">Save</button>
-        
-    </div>
-    <div id="Creator">
-        Made By Mithrajeeth
-    </div>
-</form>
-    
+        <%} %> 
+
+        <div id="Creator">Made By Mithrajeeth</div>
 </body>
 
 </html>
