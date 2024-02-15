@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
@@ -20,10 +20,11 @@
             <%if(lock){%>
             <button formaction="/mod" formmethod="get" >Lock Page</button>
             <% } %>
+
+
         </div>
     </form>
 
-    <!-- Open the modal based on a variable -->
     <% if (showModal) { %>
         <div id="lockModal">
             <form action="/lock" method="post">
@@ -40,7 +41,7 @@
         
         <%} %> 
 
-        <div id="Creator">Made By Mithrajeeth</div>
+        <div id="Creator"></div>
 </body>
 
 </html>

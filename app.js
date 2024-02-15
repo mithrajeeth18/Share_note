@@ -39,6 +39,9 @@ client
 
 app.get("/favicon.ico", (req, res) => res.status(204));
 
+app.get("/files", (req, res) => {
+  res.render("files");
+});
 app
   .route("/message")
   .get((req, res) => res.redirect(key))
@@ -55,6 +58,7 @@ app
 
 app.get("/mod", (req, res) => {
   data["showModal"] = true;
+  data["lock"] = false;
   res.redirect(key);
 });
 
@@ -85,14 +89,17 @@ app.get("/close", (req, res) => {
 
 app.post("/unlock", async (req, res) => {
   const pass = req.body.passkey;
-  const data = await client
+  const DBdata = await client
     .db("Share-Note")
     .collection("Lock")
     .findOne({ _id: key });
-  if (pass === data.Pass) {
+  if (pass === DBdata.Pass) {
     req.session.PageUnlocked = key;
     req.session.cookie.expires = new Date(Date.now() + 2 * 60 * 1000);
     req.session.cookie.maxAge = 60 * 1000;
+    return res.redirect(key);
+  } else {
+    data["error"] = "Incorrect password";
     return res.redirect(key);
   }
 });
@@ -122,7 +129,11 @@ app.use(async (req, res) => {
         return res.render("unLock", data);
       }
     } else {
-      data["lock"] = true;
+      if (data["showModal"]) {
+        data["lock"] = false;
+      } else {
+        data["lock"] = true;
+      }
     }
 
     data["notepad"] = containsData ? containsData.content : "";

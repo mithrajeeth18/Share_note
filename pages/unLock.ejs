@@ -14,8 +14,14 @@
 		<form action="/unlock" method="post">
 			<input type="password" name="passkey" placeholder="Enter passkey">
 			<br>
+			<a style="color: red;">
+				<%=error %>
+			</a>
+			<br>
 			<button type="submit">Unlock</button>
 		</form>
+		
+		</div>
 	</div>
 </body>
 
