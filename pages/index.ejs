@@ -13,14 +13,15 @@
     <form action="/message" method="post">
         <div>
             <div id="lineNumbers"></div>
-            <textarea id="notepad" name="notepad"><%= notepad %></textarea>
+            <textarea id="notepad" name="notepad" ><%= notepad %></textarea>
         </div>
         <div id="buttons">
             <button type="submit">Save</button>
             <%if(lock){%>
-            <button formaction="/mod" formmethod="get" >Lock Page</button>
+            <button formaction="/mod" formmethod="post" >Lock Page</button>
             <% } %>
-
+<br><br>
+<a href="/files">file share</a>
 
         </div>
     </form>
@@ -34,7 +35,7 @@
             <br>
             <button type="submit"  id="lockModalButton">Lock</button>
             <button formaction="/close" formmethod="get" >Close</button>
-
+            
             </form>
         </div>
     <%     } else{  %> 

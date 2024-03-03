@@ -1,10 +1,13 @@
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const { MongoClient, GridFSBucket } = require("mongodb");
 const _ = require("lodash");
 const helmet = require("helmet");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-
+const crypto = require("crypto");
+const multer = require("multer");
+const { Readable } = require("stream");
+const path = require("path");
 const app = express();
 
 app.use(cookieParser());
@@ -23,8 +26,15 @@ const client = new MongoClient(uri);
 
 let key = "";
 let content = "";
-
-const data = { notepad: "", showModal: false, error: "", lock: true };
+let randomKey = "";
+const data = {
+  notepad: "",
+  showModal: false,
+  error: "",
+  lock: true,
+  Filestatus: "",
+  Filekey: "",
+};
 
 app.use(helmet());
 app.set("view engine", "ejs");
@@ -32,34 +42,131 @@ app.set("views", "pages");
 app.use(express.static("pages"));
 app.use(express.urlencoded({ extended: false }));
 
-client
-  .connect()
-  .then(() => console.log("Connected to Database"))
-  .catch((err) => console.error(err));
+function encrypt(text, key) {
+  const cipher = crypto.createCipher("aes-256-cbc", key);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return encrypted;
+}
+
+function decrypt(encryptedText, key) {
+  const decipher = crypto.createDecipher("aes-256-cbc", key);
+  let decrypted = decipher.update(encryptedText, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+}
 
 app.get("/favicon.ico", (req, res) => res.status(204));
 
 app.get("/files", (req, res) => {
-  res.render("files");
+  res.render("filesSend", data);
 });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+let gfs;
+
+client
+  .connect()
+  .then(() => {
+    console.log("Connected to Database");
+    gfs = new GridFSBucket(client.db("Share-Note"), {
+      bucketName: "uploads",
+    });
+    console.log("GridFSBucket initialized");
+  })
+  .catch((err) => console.error(err));
+
+app.post("/upload", upload.single("file"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send("No file uploaded");
+  }
+
+  const fileData = req.file.buffer;
+  const originalFilename = req.file.originalname; // Get the original filename
+  const fileExtension = path.extname(originalFilename).toLowerCase(); // Extract the file extension
+  console.log(originalFilename);
+  randomKey = generateRandomKey();
+
+  const readableStream = new Readable();
+  readableStream.push(fileData);
+  readableStream.push(null);
+
+  const uploadStream = gfs.openUploadStream(randomKey, {
+    metadata: { originalFilename },
+  });
+  const id = uploadStream.id;
+
+  readableStream
+    .pipe(uploadStream)
+    .on("error", (err) => {
+      console.error("Error uploading file to GridFS:", err);
+      res.status(500).send("Internal Server Error");
+    })
+    .on("finish", async () => {
+      console.log("File uploaded successfully");
+
+      await client.db("Share-Note").collection("FileKeys").insertOne({
+        _id: randomKey,
+        fileId: id,
+        originalFilename: originalFilename,
+      });
+      data["Filekey"] = randomKey;
+      data["Filestatus"] = "File uploaded successfully";
+      res.redirect("/files");
+    });
+});
+
+app.get("/recive", (req, res) => {
+  res.render("filesRecive");
+});
+
+app.get("/download", async (req, res) => {
+  const f_key = req.query.Filekey;
+  try {
+    const fileRecord = await client
+      .db("Share-Note")
+      .collection("FileKeys")
+      .findOne({ _id: f_key });
+
+    if (!fileRecord) {
+      return res.status(404).send("File not found");
+    }
+
+    const Filename = fileRecord.originalFilename;
+
+    const downloadStream = gfs.openDownloadStream(Filename);
+    res.set("Content-Disposition", `attachment; filename=${extension}`);
+    downloadStream.pipe(res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app
   .route("/message")
   .get((req, res) => res.redirect(key))
   .post(async (req, res) => {
     content = req.body.notepad;
+    const encryptedContent = encrypt(content, "your_encryption_key");
     await client
       .db("Share-Note")
       .collection("Data")
-      .updateOne({ _id: key }, { $set: { content } }, { upsert: true });
+      .updateOne(
+        { _id: key },
+        { $set: { content: encryptedContent } },
+        { upsert: true }
+      );
     res.redirect(key);
     key = "";
     content = "";
   });
 
-app.get("/mod", (req, res) => {
+app.post("/mod", (req, res) => {
   data["showModal"] = true;
   data["lock"] = false;
-  res.redirect(key);
+  return res.redirect(key);
 });
 
 app.post("/lock", async (req, res) => {
@@ -75,6 +182,7 @@ app.post("/lock", async (req, res) => {
       .collection("Lock")
       .updateOne({ _id: key }, { $set: { Pass: password } }, { upsert: true });
   }
+
   req.session.PageUnlocked = key;
   req.session.cookie.expires = new Date(Date.now() + 60 * 1000);
   req.session.cookie.maxAge = 60 * 1000;
@@ -136,7 +244,10 @@ app.use(async (req, res) => {
       }
     }
 
-    data["notepad"] = containsData ? containsData.content : "";
+    data["notepad"] = containsData
+      ? decrypt(containsData.content, "your_encryption_key")
+      : "";
+
     res.render("index", data);
   } catch (error) {
     console.error(error);
