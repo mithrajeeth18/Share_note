@@ -134,11 +134,11 @@ app.get("/download", async (req, res) => {
     }
 
     const Filename = fileRecord.originalFilename;
-
-    const downloadStream = gfs.openDownloadStream(Filename);
-    res.set("Content-Disposition", `attachment; filename=${extension}`);
+    const fileid = fileRecord.fileId;
+    const downloadStream = gfs.openDownloadStream(fileid);
+    res.set("Content-Disposition", `attachment; filename=${Filename}`);
     downloadStream.pipe(res);
-  } catch (error) {
+~``  } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
