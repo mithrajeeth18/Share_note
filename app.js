@@ -261,3 +261,4 @@ function generateRandomKey() {
   const characters = "abcdefghijklmnopqrstuvwxyz@#";
   return _.times(7, () => _.sample(characters)).join("");
 }
+
